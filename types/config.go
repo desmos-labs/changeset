@@ -27,7 +27,7 @@ func DefaultConfig(githubRepo string, version *Version) *Config {
 			NewType(CategoryFix, "security", "Fix a security issue"),
 		},
 		Modules: []*Module{
-			NewModule("External", "External"),
+			NewModule("external", "External"),
 		},
 	}
 }

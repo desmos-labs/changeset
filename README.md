@@ -24,6 +24,8 @@ You need to specify two arguments:
 - `version` must represent the current version of the software.  
    This will later be used to determine the next version if needed.
   
+This will generate a file named `config.yaml` inside a new `.changeset` folder in your current directory. The next thing you have to do is edit such file to make sure the `types` and `modules` arrays contain the type of changes and the supported modules you want to have.  
+  
 ### Adding a changeset entry
 Once that's done, you can simply add a new changeset entry using 
 
