@@ -39,7 +39,15 @@ This will create an interactive prompt that you can use to fill all the data.
 Finally, when you are ready to collect all the changeset entries into a changelog entry you can simply run 
 
 ```
-changeset collect [[version]]
+changeset collect
 ```
 
-The `version` parameter is optional. If specified, `changeset` will use its value as the name of the next version. Otherwise, it will compute the next version based on the type and backward compatibility of the changes that have been made following the [semantic versioning](https://semver.org/) specifications.   
+This command will get all the current changeset entries and create a CHANGELOG entry. Then, it will replace the `Unreleased` section of your file with the newly generated entry. The new version number will be computed based on the type and backward compatibility of the changes that have been made following the [semantic versioning](https://semver.org/) specifications.
+
+This command supports the following flags
+
+| Flag | Default value | Description |
+| :--- | :----------- | :---------- |
+| `--path` | `$(curdir)/CHANGELOG.md` | Path to the CHANGELOG file to update |
+| `--version` | ` ` | Version to be used instead of the computed one. | 
+| `--dry-run` | `false` | If `true`, preview the result without applying it to the CHANGELOG file |
