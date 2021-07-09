@@ -1,16 +1,17 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/desmos-labs/changeset/types"
 	"github.com/desmos-labs/changeset/utils"
-	"github.com/spf13/cobra"
 )
 
 // CollectCmd returns the Cobra command allowing to collect the changeset entries into a CHANGELOG entry
 func CollectCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "collect [[version]]",
-		Short: "Collect the current changeset entries into a new verison.",
+		Short: "Collect the current changeset entries into a new version.",
 		Long: `
 Collect the current changeset entries and create a Changelog entry.
 If a version is specified, that version will be used as the next version. Otherwise, the next version

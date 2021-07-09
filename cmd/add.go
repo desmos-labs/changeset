@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/desmos-labs/changeset/types"
-	"github.com/desmos-labs/changeset/utils"
-	"github.com/manifoldco/promptui"
-	"github.com/spf13/cobra"
 	"strconv"
 	"strings"
+
+	"github.com/manifoldco/promptui"
+	"github.com/spf13/cobra"
+
+	"github.com/desmos-labs/changeset/types"
+	"github.com/desmos-labs/changeset/utils"
 )
 
 // AddCmd returns the Cobra command that allows to add a new changeset entry

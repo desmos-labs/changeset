@@ -2,8 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"github.com/desmos-labs/changeset/types"
 	"strings"
+
+	"github.com/desmos-labs/changeset/types"
 )
 
 // CollectChanges collects the given entries as a types.TypeChanges instance

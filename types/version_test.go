@@ -1,10 +1,12 @@
 package types_test
 
 import (
-	"github.com/desmos-labs/changeset/types"
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
-	"testing"
+
+	"github.com/desmos-labs/changeset/types"
 )
 
 func TestVersion_MarshalUnmarshal(t *testing.T) {

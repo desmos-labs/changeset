@@ -2,10 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"github.com/desmos-labs/changeset/types"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"path"
+
+	"gopkg.in/yaml.v2"
+
+	"github.com/desmos-labs/changeset/types"
 )
 
 // GetConfigFilePath returns the path to the configuration file, or an error if something goes wrong

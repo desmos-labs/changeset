@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/desmos-labs/changeset/types"
 	"github.com/desmos-labs/changeset/utils"
-	"github.com/spf13/cobra"
 )
 
 // InitCmd returns the Cobra command that allows to initialize the current folder to use changeset

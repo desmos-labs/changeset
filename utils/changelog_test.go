@@ -1,10 +1,12 @@
 package utils_test
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
 	"github.com/desmos-labs/changeset/types"
 	"github.com/desmos-labs/changeset/utils"
-	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestCollectChanges(t *testing.T) {

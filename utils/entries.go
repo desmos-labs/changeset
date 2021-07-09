@@ -2,11 +2,13 @@ package utils
 
 import (
 	"fmt"
-	"github.com/desmos-labs/changeset/types"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"path"
 	"time"
+
+	"gopkg.in/yaml.v2"
+
+	"github.com/desmos-labs/changeset/types"
 )
 
 // GetEntriesFolderPath returns the path to the entries folder, or an error if something goes wrong
