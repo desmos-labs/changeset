@@ -1,6 +1,9 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 const (
 	CategoryChange = "change"
@@ -67,20 +70,24 @@ func NewModule(id ModuleID, description string) *Module {
 
 // Entry represents a single changeset entry
 type Entry struct {
-	Type                 TypeCode `yaml:"type"`
-	Module               ModuleID `yaml:"module"`
-	PullRequestID        int      `yaml:"pull_request"`
-	Description          string   `yaml:"description"`
-	IsBackwardCompatible bool     `yaml:"backward_compatible"`
+	Type                 TypeCode  `yaml:"type"`
+	Module               ModuleID  `yaml:"module"`
+	PullRequestID        int       `yaml:"pull_request"`
+	Description          string    `yaml:"description"`
+	IsBackwardCompatible bool      `yaml:"backward_compatible"`
+	Time                 time.Time `yaml:"date"`
 }
 
 // NewEntry allows to build a new Entry instance
-func NewEntry(typeCode TypeCode, moduleID ModuleID, pr int, description string, backwardCompatible bool) *Entry {
+func NewEntry(
+	typeCode TypeCode, moduleID ModuleID, pr int, description string, backwardCompatible bool, time time.Time,
+) *Entry {
 	return &Entry{
 		Type:                 typeCode,
 		Module:               moduleID,
 		PullRequestID:        pr,
 		Description:          description,
 		IsBackwardCompatible: backwardCompatible,
+		Time:                 time,
 	}
 }

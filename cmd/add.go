@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -49,8 +50,14 @@ func runAdd(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	entry := types.NewEntry(selectedType.Code, selectedModule.ID, getPRID, description, isBackwardCompatible)
-	err = utils.WriteEntry(entry)
+	err = utils.WriteEntry(types.NewEntry(
+		selectedType.Code,
+		selectedModule.ID,
+		getPRID,
+		description,
+		isBackwardCompatible,
+		time.Now().UTC(),
+	))
 	if err != nil {
 		return err
 	}

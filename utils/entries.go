@@ -1,10 +1,11 @@
 package utils
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"path"
-	"time"
 
 	"gopkg.in/yaml.v2"
 
@@ -34,13 +35,14 @@ func WriteEntry(entry *types.Entry) error {
 		return err
 	}
 
-	entryName := fmt.Sprintf("%s.yaml", time.Now().UTC().Format(time.RFC3339))
-	entryFilePath := path.Join(entriesFolderPath, entryName)
-
 	bz, err := yaml.Marshal(entry)
 	if err != nil {
 		return fmt.Errorf("error while serializing changeset entry: %s", err)
 	}
+
+	shasum := sha256.Sum256(bz)
+	entryName := fmt.Sprintf("%s.yaml", hex.EncodeToString(shasum[:]))
+	entryFilePath := path.Join(entriesFolderPath, entryName)
 
 	err = ioutil.WriteFile(entryFilePath, bz, 0666)
 	if err != nil {
