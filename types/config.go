@@ -11,6 +11,7 @@ var (
 )
 
 const (
+	TypeCodeDeps        = "deps"
 	TypeCodeFeat        = "feat"
 	TypeCodeFix         = "fix"
 	TypeCodePerformance = "perf"
@@ -31,7 +32,7 @@ func init() {
 	}
 
 	for code, commitType := range typesData {
-		shouldBeHidden := code != TypeCodeFeat && code != TypeCodeFix && code != TypeCodePerformance && code != TypeCodeRevert
+		shouldBeHidden := code != TypeCodeDeps && code != TypeCodeFeat && code != TypeCodeFix && code != TypeCodePerformance && code != TypeCodeRevert
 		DefaultTypes = append(DefaultTypes, NewType(TypeCode(code), commitType.Title, commitType.Description, shouldBeHidden))
 	}
 }

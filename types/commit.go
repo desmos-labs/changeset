@@ -10,6 +10,10 @@ var typesJSON = `
     "description": "A bug fix",
     "title": "Bug Fixes"
   },
+  "deps": {
+    "description": "Updated a third party dependency",
+    "title": "Dependencies"
+  },
   "docs": {
     "description": "Documentation only changes",
     "title": "Documentation"
