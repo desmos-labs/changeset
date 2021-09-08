@@ -52,7 +52,7 @@ func runAdd(cmd *cobra.Command, _ []string) error {
 
 	err = utils.WriteEntry(types.NewEntry(
 		selectedType.Code,
-		selectedModule.ID,
+		selectedModule.Code,
 		getPRID,
 		description,
 		isBackwardCompatible,
@@ -110,6 +110,10 @@ func selectBackWardCompatible() (bool, error) {
 
 // selectModule allows to select which module this change refers to
 func selectModule() (*types.Module, error) {
+	if len(cfg.Modules) == 0 {
+		return types.ModuleNone, nil
+	}
+
 	prompt := promptui.Select{
 		Label: "Module",
 		Items: cfg.Modules,

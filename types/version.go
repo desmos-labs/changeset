@@ -84,11 +84,11 @@ func GetNextVersion(config *Config, entries []*Entry) (*Version, error) {
 			return nil, err
 		}
 
-		if entryType.Category == CategoryChange {
+		if entryType.Code == TypeCodeRefactor {
 			containsBackChanges = true
 		}
 
-		if entryType.Category == CategoryFix {
+		if entryType.Code == TypeCodeFix {
 			containsBackBugFixes = true
 		}
 	}

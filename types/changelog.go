@@ -1,7 +1,7 @@
 package types
 
 // ModuleChanges represents all the changes associated to a module
-type ModuleChanges map[ModuleID][]*Entry
+type ModuleChanges map[ModuleCode][]*Entry
 
 // TypeChanges represents all the changes associated to a specific type
 type TypeChanges map[TypeCode]ModuleChanges

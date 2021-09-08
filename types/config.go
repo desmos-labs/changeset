@@ -1,9 +1,40 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
+
+var (
+	DefaultTypes []*Type
+)
+
+const (
+	TypeCodeFeat        = "feat"
+	TypeCodeFix         = "fix"
+	TypeCodePerformance = "perf"
+	TypeCodeRefactor    = "refactor"
+	TypeCodeRevert      = "revert"
+)
+
+func init() {
+	type CommitType struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+	}
+
+	var typesData map[string]CommitType
+	err := json.Unmarshal([]byte(typesJSON), &typesData)
+	if err != nil {
+		panic(err)
+	}
+
+	for code, commitType := range typesData {
+		shouldBeHidden := code != TypeCodeFeat && code != TypeCodeFix && code != TypeCodePerformance && code != TypeCodeRevert
+		DefaultTypes = append(DefaultTypes, NewType(TypeCode(code), commitType.Title, commitType.Description, shouldBeHidden))
+	}
+}
 
 // Config contains the data of the configuration
 type Config struct {
@@ -18,17 +49,8 @@ func DefaultConfig(githubRepo string, version *Version) *Config {
 	return &Config{
 		GitHubRepo:     githubRepo,
 		CurrentVersion: version,
-		Types: []*Type{
-			NewType(CategoryChange, "added", "Added a new feature"),
-			NewType(CategoryChange, "changed", "Changed a feature"),
-			NewType(CategoryChange, "deprecated", "Deprecated a feature"),
-			NewType(CategoryChange, "removed", "Removed a feature"),
-			NewType(CategoryFix, "fixed", "Fixed a bug"),
-			NewType(CategoryFix, "security", "Fix a security issue"),
-		},
-		Modules: []*Module{
-			NewModule("external", "External"),
-		},
+		Types:          DefaultTypes,
+		Modules:        []*Module{},
 	}
 }
 
@@ -42,27 +64,24 @@ func (c *Config) GetTypeByCode(code TypeCode) (*Type, error) {
 	return nil, fmt.Errorf("invalid type code: %s", code)
 }
 
-// GetModuleByID returns the module having the given ID, or an error if such type cannot be found
-func (c *Config) GetModuleByID(id ModuleID) (*Module, error) {
+// GetModuleByCode returns the module having the given Code, or an error if such type cannot be found
+func (c *Config) GetModuleByCode(code ModuleCode) (*Module, error) {
+	if code == ModuleNone.Code {
+		return nil, nil
+	}
+
 	for _, m := range c.Modules {
-		if m.ID == id {
+		if m.Code == code {
 			return m, nil
 		}
 	}
-	return nil, fmt.Errorf("invalid module id: %s", id)
+	return nil, fmt.Errorf("invalid module code: %s", code)
 }
 
 // Validate returns an error if the config contains some invalid values
 func (c *Config) Validate() error {
 	if strings.TrimSpace(c.GitHubRepo) == "" {
 		return fmt.Errorf("invalid GitHub repo URL")
-	}
-
-	for _, t := range c.Types {
-		err := t.Validate()
-		if err != nil {
-			return fmt.Errorf("invalid types %s: %s", t.Code, err)
-		}
 	}
 
 	return nil

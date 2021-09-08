@@ -35,16 +35,23 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 			return "", err
 		}
 
+		if changesType.Hide {
+			continue
+		}
+
 		output += fmt.Sprintf("### %s\n", strings.Title(changesType.Code.String()))
 		for moduleID, entries := range changes {
-			module, err := config.GetModuleByID(moduleID)
+			module, err := config.GetModuleByCode(moduleID)
 			if err != nil {
 				return "", err
 			}
 
-			output += fmt.Sprintf("#### %s\n", module.Description)
+			if module != nil {
+				output += fmt.Sprintf("#### %s\n", module.Description)
+			}
+
 			for _, entry := range entries {
-				output += fmt.Sprintf("* ([%[1]d](%[2]s/pull/%[1]d)) %[3]s\n",
+				output += fmt.Sprintf("* ([\\#%[1]d](%[2]s/pull/%[1]d)) %[3]s\n",
 					entry.PullRequestID, config.GitHubRepo, entry.Description)
 			}
 			output += "\n"
@@ -83,12 +90,20 @@ func UpdateChangelog(data string, path string) (string, error) {
 		index++
 	}
 
+	if unreleasedTitleLine == 0 {
+		unreleasedTitleLine = index
+	}
+
+	if nextVersionLine == 0 {
+		nextVersionLine = index
+	}
+
 	err = scanner.Err()
 	if err != nil {
 		return "", err
 	}
 
-	updatedLines := append(lines[:unreleasedTitleLine], lines[nextVersionLine:]...)
-	updatedText := strings.Join(updatedLines, "\n")
-	return strings.Join([]string{data, updatedText}, "\n"), nil
+	linesBefore := lines[0 : unreleasedTitleLine-1]
+	linesAfter := lines[nextVersionLine:]
+	return strings.Join(append(append(linesBefore, data), linesAfter...), "\n"), nil
 }
