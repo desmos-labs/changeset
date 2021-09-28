@@ -3,11 +3,13 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 )
 
 var (
 	DefaultTypes []*Type
+	HTTPPrefix   = regexp.MustCompile("https?://")
 )
 
 const (
@@ -53,6 +55,15 @@ func DefaultConfig(githubRepo string, version *Version) *Config {
 		Types:          DefaultTypes,
 		Modules:        []*Module{},
 	}
+}
+
+// GetRepoURL returns the complete GitHub repo URL
+func (c *Config) GetRepoURL() string {
+	if HTTPPrefix.MatchString(c.GitHubRepo) {
+		return c.GitHubRepo
+	}
+
+	return fmt.Sprintf("https://%s", c.GitHubRepo)
 }
 
 // GetTypeByCode returns the type having the given code, or an error if such type cannot be found
