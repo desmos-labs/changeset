@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/desmos-labs/changeset/types"
@@ -54,6 +55,11 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 			if module != nil {
 				output += fmt.Sprintf("#### %s\n", module.Description)
 			}
+
+			// Sort the entries based on the pull request number
+			sort.SliceStable(entries, func(i, j int) bool {
+				return entries[i].PullRequestID < entries[j].PullRequestID
+			})
 
 			for _, entry := range entries {
 				output += fmt.Sprintf("* ([\\#%[1]d](%[2]s/pull/%[1]d)) %[3]s\n",
