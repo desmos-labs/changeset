@@ -27,10 +27,15 @@ func CollectChanges(entries []*types.Entry) types.TypeChanges {
 
 // ConvertToMarkdown converts the given changelog to a Markdown representation
 func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string, error) {
-	output := fmt.Sprintf("## %s\n", changelog.Version)
+	output := fmt.Sprintf("## Version %s\n", changelog.Version)
 
-	for typeCode, changes := range changelog.Changes {
-		changesType, err := config.GetTypeByCode(typeCode)
+	for _, changeType := range config.Types {
+		changes := changelog.Changes[changeType.Code]
+		if len(changes) == 0 {
+			continue
+		}
+
+		changesType, err := config.GetTypeByCode(changeType.Code)
 		if err != nil {
 			return "", err
 		}
@@ -39,7 +44,7 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 			continue
 		}
 
-		output += fmt.Sprintf("### %s\n", strings.Title(changesType.Code.String()))
+		output += fmt.Sprintf("### %s\n", strings.Title(changesType.Title))
 		for moduleID, entries := range changes {
 			module, err := config.GetModuleByCode(moduleID)
 			if err != nil {
@@ -52,7 +57,7 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 
 			for _, entry := range entries {
 				output += fmt.Sprintf("* ([\\#%[1]d](%[2]s/pull/%[1]d)) %[3]s\n",
-					entry.PullRequestID, config.GitHubRepo, entry.Description)
+					entry.PullRequestID, config.GetRepoURL(), entry.Description)
 			}
 			output += "\n"
 		}
