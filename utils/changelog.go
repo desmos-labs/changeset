@@ -62,7 +62,7 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 			})
 
 			for _, entry := range entries {
-				output += fmt.Sprintf("* ([\\#%[1]d](%[2]s/pull/%[1]d)) %[3]s\n",
+				output += fmt.Sprintf("- ([\\#%[1]d](%[2]s/pull/%[1]d)) %[3]s\n",
 					entry.PullRequestID, config.GetRepoURL(), entry.Description)
 			}
 			output += "\n"
