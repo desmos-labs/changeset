@@ -84,7 +84,7 @@ func UpdateChangelog(data string, path string) (string, error) {
 	scanner := bufio.NewScanner(file)
 
 	var lines []string
-	var unreleasedTitleLine, nextVersionLine int
+	var unreleasedTitleLine, firstVersionLine, nextVersionLine int
 
 	var index = 0
 	for scanner.Scan() {
@@ -93,6 +93,8 @@ func UpdateChangelog(data string, path string) (string, error) {
 		isVersionTitle := strings.HasPrefix(line, "## ")
 		if isVersionTitle && strings.Contains(strings.ToLower(line), "unreleased") {
 			unreleasedTitleLine = index
+		} else if isVersionTitle && firstVersionLine == 0 {
+			firstVersionLine = index
 		} else if isVersionTitle && nextVersionLine == 0 {
 			nextVersionLine = index
 		}
@@ -102,7 +104,7 @@ func UpdateChangelog(data string, path string) (string, error) {
 	}
 
 	if unreleasedTitleLine == 0 {
-		unreleasedTitleLine = index
+		unreleasedTitleLine = firstVersionLine
 	}
 
 	if nextVersionLine == 0 {
