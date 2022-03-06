@@ -31,8 +31,8 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 	output := fmt.Sprintf("## Version %s\n", changelog.Version)
 
 	for _, changeType := range config.Types {
-		changes := changelog.Changes[changeType.Code]
-		if len(changes) == 0 {
+		moduleChanges := changelog.Changes[changeType.Code]
+		if len(moduleChanges) == 0 {
 			continue
 		}
 
@@ -46,13 +46,15 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 		}
 
 		output += fmt.Sprintf("### %s\n", strings.Title(changesType.Title))
-		for moduleID, entries := range changes {
-			module, err := config.GetModuleByCode(moduleID)
-			if err != nil {
-				return "", err
+
+		for _, module := range config.Modules {
+			// Get the entries for this module
+			entries := moduleChanges.GetEntriesByModule(module.Code)
+			if len(entries) == 0 {
+				continue
 			}
 
-			if module != nil {
+			if module.Code != types.ModuleNone.Code {
 				output += fmt.Sprintf("#### %s\n", module.Description)
 			}
 

@@ -3,6 +3,15 @@ package types
 // ModuleChanges represents all the changes associated to a module
 type ModuleChanges map[ModuleCode][]*Entry
 
+func (m ModuleChanges) GetEntriesByModule(code ModuleCode) []*Entry {
+	for moduleCode, moduleEntries := range m {
+		if moduleCode == code {
+			return moduleEntries
+		}
+	}
+	return nil
+}
+
 // TypeChanges represents all the changes associated to a specific type
 type TypeChanges map[TypeCode]ModuleChanges
 
