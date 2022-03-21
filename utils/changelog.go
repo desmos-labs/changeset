@@ -118,7 +118,7 @@ func UpdateChangelog(data string, path string) (string, error) {
 		return "", err
 	}
 
-	linesBefore := lines[0 : unreleasedTitleLine-1]
+	linesBefore := lines[0:unreleasedTitleLine]
 	linesAfter := lines[nextVersionLine:]
 	return strings.Join(append(append(linesBefore, data), linesAfter...), "\n"), nil
 }
