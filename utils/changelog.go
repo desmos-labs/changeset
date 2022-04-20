@@ -27,8 +27,10 @@ func CollectChanges(entries []*types.Entry) types.TypeChanges {
 }
 
 // ConvertToMarkdown converts the given changelog to a Markdown representation
-func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string, error) {
-	output := fmt.Sprintf("## Version %s\n", changelog.Version)
+func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) ([]string, error) {
+	output := []string{
+		fmt.Sprintf("## Version %s", changelog.Version),
+	}
 
 	for _, changeType := range config.Types {
 		moduleChanges := changelog.Changes[changeType.Code]
@@ -38,14 +40,14 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 
 		changesType, err := config.GetTypeByCode(changeType.Code)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
 		if changesType.Hide {
 			continue
 		}
 
-		output += fmt.Sprintf("### %s\n", strings.Title(changesType.Title))
+		output = append(output, fmt.Sprintf("### %s", strings.Title(changesType.Title)))
 
 		for _, module := range config.Modules {
 			// Get the entries for this module
@@ -55,7 +57,7 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 			}
 
 			if module.Code != types.ModuleNone.Code {
-				output += fmt.Sprintf("#### %s\n", module.Description)
+				output = append(output, fmt.Sprintf("#### %s", module.Description))
 			}
 
 			// Sort the entries based on the pull request number
@@ -64,10 +66,12 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 			})
 
 			for _, entry := range entries {
-				output += fmt.Sprintf("- ([\\#%[1]d](%[2]s/pull/%[1]d)) %[3]s\n",
-					entry.PullRequestID, config.GetRepoURL(), entry.Description)
+				output = append(output,
+					fmt.Sprintf("- ([\\#%[1]d](%[2]s/pull/%[1]d)) %[3]s",
+						entry.PullRequestID, config.GetRepoURL(), entry.Description),
+				)
 			}
-			output += "\n"
+			output = append(output, "")
 		}
 	}
 
@@ -76,7 +80,7 @@ func ConvertToMarkdown(config *types.Config, changelog *types.ChangeLog) (string
 
 // UpdateChangelog reads the CHANGELOG file located at the given path, updates it by replacing the
 // Unreleased section with the provided data, and returns the updated contents.
-func UpdateChangelog(data string, path string) (string, error) {
+func UpdateChangelog(data []string, path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return "", fmt.Errorf("error while opening changelog file: %s", err)
@@ -86,7 +90,7 @@ func UpdateChangelog(data string, path string) (string, error) {
 	scanner := bufio.NewScanner(file)
 
 	var lines []string
-	var unreleasedTitleLine, firstVersionLine, nextVersionLine int
+	var unreleasedTitleLine, firstVersionLine = -1, -1
 
 	var index = 0
 	for scanner.Scan() {
@@ -95,22 +99,12 @@ func UpdateChangelog(data string, path string) (string, error) {
 		isVersionTitle := strings.HasPrefix(line, "## ")
 		if isVersionTitle && strings.Contains(strings.ToLower(line), "unreleased") {
 			unreleasedTitleLine = index
-		} else if isVersionTitle && firstVersionLine == 0 {
+		} else if isVersionTitle && firstVersionLine == -1 {
 			firstVersionLine = index
-		} else if isVersionTitle && nextVersionLine == 0 {
-			nextVersionLine = index
 		}
 
 		lines = append(lines, line)
 		index++
-	}
-
-	if unreleasedTitleLine == 0 {
-		unreleasedTitleLine = firstVersionLine
-	}
-
-	if nextVersionLine == 0 {
-		nextVersionLine = index
 	}
 
 	err = scanner.Err()
@@ -118,7 +112,21 @@ func UpdateChangelog(data string, path string) (string, error) {
 		return "", err
 	}
 
-	linesBefore := lines[0:unreleasedTitleLine]
-	linesAfter := lines[nextVersionLine:]
-	return strings.Join(append(append(linesBefore, data), linesAfter...), "\n"), nil
+	// Compute the lines that will go before: from the line 0 up to the unreleased one
+	// (this will make sure we don't exclude top file comments)
+	var linesBefore []string
+	if unreleasedTitleLine > 0 {
+		linesBefore = append([]string{}, lines[0:unreleasedTitleLine]...)
+	} else if firstVersionLine > 0 {
+		linesBefore = append([]string{}, lines[0:firstVersionLine]...)
+	}
+
+	// Compute the lines that will go after the changelog: all previous versions (if any)
+	var linesAfter []string
+	if firstVersionLine > 0 {
+		linesAfter = append([]string{}, lines[firstVersionLine:]...)
+	}
+
+	updatedChangelog := append(append(linesBefore, data...), linesAfter...)
+	return strings.Join(updatedChangelog, "\n"), nil
 }
