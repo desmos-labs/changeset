@@ -7,7 +7,7 @@ Changeset allows to easily handle change sets and create changelog entries that 
 To install `changeset`, run the following command:
 
 ```
-go get github.com/desmos-labs/changeset/cmd/changeset
+go install github.com/desmos-labs/changeset/cmd/changeset@latest
 ```
 
 ## Usage
